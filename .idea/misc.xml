@@ -3,7 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Programming/Android/AndroidStudioProjects/MyFood/app/src/main/res/drawable/bg_edt_search.xml" value="0.129" />
         <entry key="..\:/Programming/Android/AndroidStudioProjects/MyFood/app/src/main/res/layout/activity_main.xml" value="0.22447916666666667" />
+        <entry key="..\:/Programming/Android/AndroidStudioProjects/MyFood/app/src/main/res/layout/add_food_layout.xml" value="0.22447916666666667" />
+        <entry key="..\:/Programming/Android/AndroidStudioProjects/MyFood/app/src/main/res/layout/list_item_rcv_main.xml" value="0.264" />
       </map>
     </option>
   </component>
