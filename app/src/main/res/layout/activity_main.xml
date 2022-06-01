@@ -39,29 +39,31 @@
                 app:srcCompat="@drawable/ic_baseline_add_circle_24"
                 app:tint="?colorOnPrimary" />
         </FrameLayout>
+            <EditText
 
-        <EditText
-            android:id="@+id/edtSearchFood"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/bg_edt_search"
-            android:drawableStart="@drawable/ic_baseline_search_24"
-            android:drawablePadding="8dp"
-            android:hint="find food ..."
-            android:inputType="textPersonName"
-            android:paddingStart="12dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="12dp"
-            android:paddingBottom="8dp" />
+                android:id="@+id/edtSearch"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/bg_edt_search"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="12dp"
+                android:paddingStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginStart="12dp"
+                android:drawablePadding="8dp"
+                android:drawableStart="@drawable/ic_baseline_search_24"
+                android:hint="find food ..."
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcvMain"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layoutAnimation="@anim/layout_animation_down_to_up"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -17,6 +17,10 @@ interface FoodDao {
     fun deleteFood(food: Food)
 
     @Query("SELECT * FROM food_table")
-    fun getAllFood():List<Food>
+    fun getAllFood(): List<Food>
+
+    @Query("SELECT * FROM food_table WHERE txtSubject LIKE '%' || :filter || '%'")
+    fun searchFood(filter: String): List<Food>
+
 
 }

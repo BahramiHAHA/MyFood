@@ -8,11 +8,28 @@ import com.example.myfood.R
 import com.example.myfood.databinding.ListItemRcvMainBinding
 import com.example.myfood.model.Food
 
-class AdapterRcvMain() : RecyclerView.Adapter<AdapterRcvMain.MyHolder>() {
+class AdapterRcvMain(val eventListener: AdapterRcvMainEventListener) :
+    RecyclerView.Adapter<AdapterRcvMain.MyHolder>() {
     private var foodList = ArrayList<Food>()
 
-    inner class MyHolder(val Binding: ListItemRcvMainBinding) :
-        RecyclerView.ViewHolder(Binding.root)
+    inner class MyHolder(val binding: ListItemRcvMainBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.root.setOnClickListener {
+                eventListener.onclick(
+                    foodList[adapterPosition],
+                    adapterPosition
+                )
+            }
+            binding.root.setOnLongClickListener {
+                eventListener.onLongClick(
+                    foodList[adapterPosition],
+                    adapterPosition
+                )
+                true
+            }
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyHolder {
         return MyHolder(
@@ -27,14 +44,14 @@ class AdapterRcvMain() : RecyclerView.Adapter<AdapterRcvMain.MyHolder>() {
     override fun onBindViewHolder(holder: MyHolder, position: Int) {
         val food = foodList[position]
 
-        Glide.with(holder.Binding.root).load(food.urlImage).centerCrop()
-            .placeholder(R.drawable.ic_baseline_image_24).into(holder.Binding.itemImgMain)
-        holder.Binding.ItemTxtSubject.text = food.txtSubject
-        holder.Binding.itemTxtCity.text = food.txtCity
-        holder.Binding.itemTxtPrice.text = food.txtPrice + "$"
-        holder.Binding.itemTxtDistance.text = food.txtDistance
-        holder.Binding.itemRatingBar.rating = food.rating
-        holder.Binding.itemTxtRate.text = food.numOfRating.toString()
+        Glide.with(holder.binding.root).load(food.urlImage).centerCrop()
+            .placeholder(R.drawable.ic_baseline_image_24).into(holder.binding.itemImgMain)
+        holder.binding.ItemTxtSubject.text = food.txtSubject
+        holder.binding.itemTxtCity.text = food.txtCity
+        holder.binding.itemTxtPrice.text = food.txtPrice + "$"
+        holder.binding.itemTxtDistance.text = food.txtDistance + " miles from you"
+        holder.binding.itemRatingBar.rating = food.rating
+        holder.binding.itemTxtRate.text = "( ${food.numOfRating} Ratings )"
     }
 
     override fun getItemCount(): Int {
@@ -45,5 +62,25 @@ class AdapterRcvMain() : RecyclerView.Adapter<AdapterRcvMain.MyHolder>() {
         this.foodList.clear()
         this.foodList.addAll(foodList)
         notifyDataSetChanged()
+    }
+
+    fun addFood(food: Food) {
+        foodList.add(food)
+        notifyItemInserted(foodList.size - 1)
+    }
+
+    fun deleteFood(food: Food, position: Int) {
+        foodList.remove(food)
+        notifyItemRemoved(position)
+    }
+
+    fun updateFood(food: Food, position: Int) {
+        foodList[position] = food
+        notifyItemChanged(position)
+    }
+
+    interface AdapterRcvMainEventListener {
+        fun onclick(food: Food, position: Int)
+        fun onLongClick(food: Food, position: Int)
     }
 }

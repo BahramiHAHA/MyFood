@@ -2,18 +2,20 @@ package com.example.myfood
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myfood.adapter.AdapterRcvMain
 import com.example.myfood.database.AppDatabase
 import com.example.myfood.databinding.ActivityMainBinding
 import com.example.myfood.databinding.AddFoodLayoutBinding
+import com.example.myfood.databinding.DeleteFoodLayoutBinding
+import com.example.myfood.databinding.EditFoodLayoutBinding
 import com.example.myfood.model.Food
 import java.util.concurrent.Executors
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), AdapterRcvMain.AdapterRcvMainEventListener {
     private lateinit var binding: ActivityMainBinding
     private lateinit var imageList: ArrayList<String>
     private lateinit var database: AppDatabase
@@ -28,6 +30,9 @@ class MainActivity : AppCompatActivity() {
         setupRcv()
         binding.imgAddFood.setOnClickListener {
             addFood()
+        }
+        binding.edtSearch.addTextChangedListener {
+            getFoods(it.toString())
         }
         imageList = arrayListOf(
             "https://dunijet.ir/YaghootAndroidFiles/DuniFoodSimple/food1.jpg",
@@ -46,7 +51,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupRcv() {
-        adapter = AdapterRcvMain()
+        adapter = AdapterRcvMain(this)
         binding.rcvMain.adapter = adapter
         binding.rcvMain.layoutManager = LinearLayoutManager(this)
         getFoods(null)
@@ -61,7 +66,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         } else {
-
+            executor.execute {
+                val foodList = database.foodDao().searchFood(filter)
+                runOnUiThread {
+                    adapter.setData(foodList)
+                }
+            }
         }
     }
 
@@ -89,11 +99,75 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
                 getFoods(null)
+                binding.rcvMain.smoothScrollToPosition(adapter.itemCount)
                 addDialog.dismiss()
             } else {
                 Toast.makeText(this, "fill all fields. ", Toast.LENGTH_SHORT).show()
             }
         }
         addDialog.show()
+    }
+
+    private fun editFood(food: Food, position: Int) {
+        val editBinding = EditFoodLayoutBinding.inflate(layoutInflater)
+        editBinding.dialogEdtNameFood.setText(food.txtSubject)
+        editBinding.dialogEdtFoodPrice.setText(food.txtPrice)
+        editBinding.dialogEdtFoodDistance.setText(food.txtDistance)
+        editBinding.dialogEdtFoodCity.setText(food.txtCity)
+        val editDialog =
+            AlertDialog.Builder(this).setView(editBinding.root).setCancelable(false).create()
+        editBinding.dialogBtnEdit.setOnClickListener {
+            if (editBinding.dialogEdtNameFood.length() > 0 &&
+                editBinding.dialogEdtFoodCity.length() > 0 &&
+                editBinding.dialogEdtFoodPrice.length() > 0 &&
+                editBinding.dialogEdtFoodDistance.length() > 0
+            ) {
+                executor.execute {
+                    database.foodDao().insertAndUpdateFood(
+                        Food(
+                            editBinding.dialogEdtNameFood.text.toString(),
+                            editBinding.dialogEdtFoodPrice.text.toString(),
+                            editBinding.dialogEdtFoodDistance.text.toString(),
+                            editBinding.dialogEdtFoodCity.text.toString(),
+                            food.urlImage,
+                            food.numOfRating,
+                            food.rating, food.id
+                        )
+                    )
+                    runOnUiThread {
+                        getFoods(null)
+                    }
+                }
+                editDialog.dismiss()
+            } else {
+                Toast.makeText(this, "fill all fields. ", Toast.LENGTH_SHORT).show()
+            }
+        }
+        editBinding.dialogBtnCancel.setOnClickListener { editDialog.dismiss() }
+        editDialog.show()
+    }
+
+    override fun onclick(food: Food, position: Int) {
+        editFood(food, position)
+    }
+
+    override fun onLongClick(food: Food, position: Int) {
+        val deleteBinding = DeleteFoodLayoutBinding.inflate(layoutInflater)
+        val deleteDialog =
+            AlertDialog.Builder(this).setView(deleteBinding.root).setCancelable(false).create()
+        deleteBinding.txtMessage.text = "do you want to delete ${food.txtSubject}"
+        deleteBinding.dialogBtnDelete.setOnClickListener {
+            deleteFood(food, position)
+            deleteDialog.dismiss()
+        }
+        deleteBinding.dialogBtnCancel.setOnClickListener { deleteDialog.dismiss() }
+        deleteDialog.show()
+    }
+
+    private fun deleteFood(food: Food, position: Int) {
+        executor.execute {
+            database.foodDao().deleteFood(food)
+            runOnUiThread { adapter.deleteFood(food, position) }
+        }
     }
 }
