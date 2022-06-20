@@ -1,4 +1,4 @@
-package com.example.myfood.database
+package com.example.myfood.model
 
 import androidx.room.Dao
 import androidx.room.Delete

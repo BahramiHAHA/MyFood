@@ -1,4 +1,4 @@
-package com.example.myfood.adapter
+package com.example.myfood.mainScreen
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -69,8 +69,8 @@ class AdapterRcvMain(val eventListener: AdapterRcvMainEventListener) :
         notifyItemInserted(foodList.size - 1)
     }
 
-    fun deleteFood(food: Food, position: Int) {
-        foodList.remove(food)
+    fun deleteFood(position: Int) {
+        foodList.removeAt(position)
         notifyItemRemoved(position)
     }
 

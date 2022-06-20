@@ -1,11 +1,10 @@
-package com.example.myfood.database
+package com.example.myfood.model
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.myfood.model.Food
 import java.util.concurrent.Executors
 
 @Database(version = 1, entities = [Food::class], exportSchema = false)
